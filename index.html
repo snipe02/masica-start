@@ -1,0 +1,2218 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>Start Music · Sistema de Apresentações</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = { theme: { extend: { colors: { navy: "#0a1f3c" } } } };
+    </script>
+    <style>
+      * {
+        -webkit-tap-highlight-color: transparent;
+      }
+      body {
+        font-family:
+          Inter,
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
+      }
+      .mono {
+        font-variant-numeric: tabular-nums;
+        font-feature-settings: "tnum";
+      }
+
+      .logo-badge {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #fff, #fff7ed);
+        border-radius: 14px;
+        padding: 6px 12px;
+        box-shadow:
+          0 2px 10px rgba(0, 0, 0, 0.35),
+          0 0 0 1px rgba(249, 115, 22, 0.35);
+        flex-shrink: 0;
+        overflow: hidden;
+      }
+      .logo-badge img {
+        height: 38px;
+        width: auto;
+        max-width: 140px;
+        object-fit: contain;
+        display: block;
+      }
+      @media (min-width: 640px) {
+        .logo-badge img {
+          height: 44px;
+          max-width: 180px;
+        }
+      }
+
+      .chip {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 0.45rem 0.8rem;
+        border-radius: 0.8rem;
+        line-height: 1.15;
+        font-size: 0.78rem;
+        background: rgba(255, 255, 255, 0.08);
+        color: #cbd5e1;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        transition: 0.15s;
+        white-space: nowrap;
+      }
+      .chip:hover {
+        background: rgba(255, 255, 255, 0.18);
+      }
+      .chip-active {
+        background: linear-gradient(135deg, #f97316, #ea580c);
+        color: #fff;
+        border-color: #f97316;
+        box-shadow: 0 6px 18px rgba(249, 115, 22, 0.45);
+      }
+      #sessionTabs::-webkit-scrollbar {
+        height: 0;
+      }
+      #sessionTabs {
+        scrollbar-width: none;
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #f97316, #ea580c);
+        color: #fff;
+        font-weight: 700;
+        padding: 0.55rem 1rem;
+        border-radius: 0.75rem;
+        font-size: 0.875rem;
+        transition: 0.15s;
+        box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
+      }
+      .btn-primary:hover {
+        filter: brightness(1.07);
+      }
+      .btn-primary:active {
+        transform: scale(0.98);
+      }
+      .btn-ghost {
+        background: #f1f5f9;
+        color: #334155;
+        font-weight: 600;
+        padding: 0.55rem 1rem;
+        border-radius: 0.75rem;
+        font-size: 0.875rem;
+        transition: 0.15s;
+        border: 1px solid #e2e8f0;
+      }
+      .btn-ghost:hover {
+        background: #e2e8f0;
+      }
+      .ico {
+        width: 1.9rem;
+        height: 1.9rem;
+        display: grid;
+        place-items: center;
+        border-radius: 0.5rem;
+        background: #f1f5f9;
+        color: #475569;
+        font-size: 0.7rem;
+        transition: 0.15s;
+        border: 1px solid #e2e8f0;
+      }
+      .ico:hover {
+        background: #e2e8f0;
+      }
+      .ico-danger:hover {
+        background: #fee2e2;
+        color: #dc2626;
+        border-color: #fecaca;
+      }
+
+      .inp {
+        width: 100%;
+        padding: 0.6rem 0.8rem;
+        border-radius: 0.7rem;
+        border: 1px solid #cbd5e1;
+        background: #fff;
+        font-size: 0.9rem;
+        outline: none;
+        transition: 0.15s;
+      }
+      .inp:focus {
+        border-color: #f97316;
+        box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.18);
+      }
+      .fld {
+        display: block;
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: #475569;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .fld .inp {
+        margin-top: 0.25rem;
+        font-weight: 500;
+        text-transform: none;
+        letter-spacing: 0;
+        color: #0f172a;
+      }
+
+      .prof-wrap {
+        display: flex;
+        margin-top: 0.25rem;
+      }
+      .prof-fixed {
+        display: grid;
+        place-items: center;
+        padding: 0 0.8rem;
+        background: #fff7ed;
+        color: #c2410c;
+        font-weight: 800;
+        font-size: 0.9rem;
+        border: 1px solid #fdba74;
+        border-right: 0;
+        border-radius: 0.7rem 0 0 0.7rem;
+        text-transform: none;
+        letter-spacing: 0;
+      }
+      .prof-wrap select.prof-fixed {
+        cursor: pointer;
+        outline: none;
+      }
+      .prof-wrap .inp {
+        margin-top: 0;
+        border-radius: 0 0.7rem 0.7rem 0;
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        padding: 0.22rem 0.6rem;
+        border-radius: 999px;
+        font-size: 0.7rem;
+        font-weight: 800;
+        white-space: nowrap;
+        letter-spacing: 0.02em;
+      }
+      .status-select {
+        padding: 0.28rem 0.5rem;
+        border-radius: 0.6rem;
+        font-size: 0.72rem;
+        font-weight: 800;
+        border: 1px solid;
+        outline: none;
+        cursor: pointer;
+      }
+
+      .live-dot {
+        width: 0.55rem;
+        height: 0.55rem;
+        border-radius: 999px;
+        background: #22c55e;
+        animation: pulse 1.8s infinite;
+      }
+      @keyframes pulse {
+        0% {
+          box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+        }
+        70% {
+          box-shadow: 0 0 0 0.55rem rgba(34, 197, 94, 0);
+        }
+        100% {
+          box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
+        }
+      }
+
+      #toasts {
+        position: fixed;
+        z-index: 80;
+        bottom: 1rem;
+        right: 1rem;
+        left: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        align-items: flex-end;
+        pointer-events: none;
+      }
+      .toast {
+        pointer-events: auto;
+        max-width: 22rem;
+        width: 100%;
+        background: #0f172a;
+        color: #fff;
+        border-radius: 0.9rem;
+        padding: 0.75rem 1rem;
+        box-shadow: 0 12px 30px rgba(2, 6, 23, 0.4);
+        border-left: 5px solid #f97316;
+        animation: slideIn 0.25s ease-out;
+      }
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateY(12px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+
+      .stage-bar {
+        height: 0.6rem;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.28);
+        overflow: hidden;
+      }
+      .stage-bar > div {
+        height: 100%;
+        border-radius: 999px;
+        background: #fff;
+        transition: width 0.4s linear;
+      }
+      .over .stage-bar > div {
+        background: #fecaca;
+      }
+      .over .stage-clock {
+        color: #fee2e2;
+      }
+      @keyframes blink {
+        50% {
+          opacity: 0.55;
+        }
+      }
+      .over .stage-over {
+        animation: blink 1s infinite;
+      }
+    </style>
+  </head>
+
+  <body class="bg-slate-100 min-h-screen text-slate-800">
+    <header class="bg-navy text-white shadow-lg sticky top-0 z-40">
+      <div
+        class="max-w-7xl mx-auto px-3 sm:px-5 py-3 flex items-center justify-between gap-3"
+      >
+        <div class="flex items-center gap-3 min-w-0">
+          <div class="logo-badge" title="Start Music">
+            <img
+              src="foto1.jpeg"
+              alt="Start Music"
+              onerror="this.parentNode.style.display = 'none'"
+            />
+          </div>
+          <div class="min-w-0">
+            <h1
+              id="schoolName"
+              class="font-extrabold text-base sm:text-lg leading-tight truncate"
+            >
+              Start Music
+            </h1>
+            <p class="text-[11px] sm:text-xs text-slate-300 truncate">
+              Painel de Apresentações ao Vivo
+            </p>
+          </div>
+        </div>
+        <div class="flex items-center gap-1.5 sm:gap-2">
+          <button
+            data-act="toggle-sound"
+            id="btnSound"
+            title="Sons"
+            class="w-9 h-9 grid place-items-center rounded-lg bg-white/10 hover:bg-white/20 transition text-sm"
+          >
+            🔔
+          </button>
+          <button
+            data-act="tab"
+            data-tab="live"
+            class="tab-btn px-3 py-2 rounded-lg text-xs sm:text-sm font-bold bg-white/10 hover:bg-white/20 transition"
+          >
+            Ao Vivo
+          </button>
+          <button
+            data-act="tab"
+            data-tab="admin"
+            class="tab-btn px-3 py-2 rounded-lg text-xs sm:text-sm font-bold bg-white/10 hover:bg-white/20 transition"
+          >
+            Equipe
+          </button>
+        </div>
+      </div>
+      <div class="border-t border-white/10">
+        <div class="max-w-7xl mx-auto px-3 sm:px-5 py-2">
+          <div
+            id="sessionTabs"
+            class="flex gap-4 overflow-x-auto items-center"
+          ></div>
+        </div>
+      </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-3 sm:px-5 py-4 sm:py-6">
+      <section id="liveView"></section>
+
+      <section id="adminView" class="hidden">
+        <div
+          id="adminGate"
+          class="max-w-md mx-auto mt-8 bg-white rounded-2xl shadow-sm border border-slate-200 p-6 text-center"
+        >
+          <div class="text-4xl">🔒</div>
+          <h2 class="text-xl font-extrabold text-navy mt-2">
+            Área restrita da equipe
+          </h2>
+          <p class="text-sm text-slate-500 mt-1">
+            Somente a equipe pode criar ou editar a programação. Alunos e
+            público acompanham tudo pela aba <b>Ao Vivo</b>.
+          </p>
+          <input
+            id="loginPass"
+            type="password"
+            autocomplete="current-password"
+            class="inp mt-4 text-center"
+            placeholder="Senha da equipe"
+          />
+          <button data-act="login" class="btn-primary w-full mt-3">
+            Entrar
+          </button>
+          <button
+            data-act="reset-pass"
+            class="text-xs text-slate-400 hover:text-red-500 mt-3 underline"
+          >
+            Esqueci a senha (resetar sistema)
+          </button>
+        </div>
+
+        <div id="adminPanel" class="hidden space-y-4">
+          <div
+            id="pwdWarning"
+            class="hidden bg-amber-50 border border-amber-300 rounded-xl p-3 text-sm text-amber-800"
+          >
+            ⚠️ Você está usando a <b>senha padrão</b>. Vá em Configurações →
+            Senha da equipe e altere agora.
+          </div>
+
+          <div
+            class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 sm:p-5"
+          >
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+              <h2 class="font-extrabold text-navy">Sessões do evento</h2>
+              <div class="flex gap-2">
+                <button data-act="logout" class="btn-ghost">Sair</button>
+                <button data-act="new-session" class="btn-primary">
+                  + Nova sessão
+                </button>
+              </div>
+            </div>
+            <div id="adminSessions" class="space-y-2"></div>
+          </div>
+
+          <div
+            class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 sm:p-5"
+          >
+            <h2 class="font-extrabold text-navy mb-1">Professores</h2>
+            <p class="text-xs text-slate-500 mb-3">
+              O tratamento <b>Prof.</b> / <b>Profa.</b> já fica fixo. Basta
+              acrescentar o nome aqui e escolhê-lo ao cadastrar o aluno.
+            </p>
+            <div class="flex gap-2">
+              <div class="prof-wrap flex-1" style="margin-top: 0">
+                <select id="t_title" class="prof-fixed">
+                  <option>Prof.</option>
+                  <option>Profa.</option>
+                </select>
+                <input
+                  id="t_name"
+                  class="inp"
+                  placeholder="Nome do professor(a)"
+                />
+              </div>
+              <button data-act="add-teacher" class="btn-primary">
+                + Adicionar
+              </button>
+            </div>
+            <div id="adminTeachers" class="flex flex-wrap gap-2 mt-3"></div>
+          </div>
+
+          <div
+            class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 sm:p-5"
+          >
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+              <h2 class="font-extrabold text-navy">
+                Alunos da sessão
+                <span
+                  id="adminSessionName"
+                  class="block sm:inline text-xs font-medium text-slate-500"
+                ></span>
+              </h2>
+              <div class="flex gap-2">
+                <button data-act="import-open" class="btn-ghost">
+                  📥 Importar
+                </button>
+                <button data-act="new-student" class="btn-primary">
+                  + Aluno
+                </button>
+              </div>
+            </div>
+            <div id="adminStudents" class="space-y-2"></div>
+          </div>
+
+          <div
+            class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 sm:p-5"
+          >
+            <h2 class="font-extrabold text-navy mb-3">Configurações</h2>
+            <div class="grid sm:grid-cols-2 gap-3">
+              <label
+                class="flex items-center justify-between gap-3 bg-slate-50 rounded-xl px-4 py-3 border border-slate-200 cursor-pointer"
+              >
+                <span class="text-sm font-semibold text-slate-700"
+                  >🔔 Alertas sonoros</span
+                >
+                <input
+                  type="checkbox"
+                  data-toggle="sound"
+                  class="w-5 h-5 accent-orange-500"
+                />
+              </label>
+              <label
+                class="flex items-center justify-between gap-3 bg-slate-50 rounded-xl px-4 py-3 border border-slate-200 cursor-pointer"
+              >
+                <span class="text-sm font-semibold text-slate-700"
+                  >📳 Vibração</span
+                >
+                <input
+                  type="checkbox"
+                  data-toggle="vibration"
+                  class="w-5 h-5 accent-orange-500"
+                />
+              </label>
+            </div>
+          </div>
+
+          <div
+            class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 sm:p-5"
+          >
+            <h2 class="font-extrabold text-navy mb-3">Senha da equipe</h2>
+            <div class="grid sm:grid-cols-2 gap-3">
+              <label class="fld"
+                >Nova senha
+                <input
+                  id="newPass"
+                  type="password"
+                  class="inp"
+                  placeholder="Mínimo 6 caracteres"
+                  autocomplete="new-password"
+              /></label>
+              <label class="fld"
+                >Confirmar senha
+                <input
+                  id="newPass2"
+                  type="password"
+                  class="inp"
+                  placeholder="Repita a senha"
+                  autocomplete="new-password"
+              /></label>
+            </div>
+            <button data-act="change-pass" class="btn-primary mt-3">
+              Alterar senha
+            </button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <div
+      id="modalRoot"
+      class="hidden fixed inset-0 z-50 bg-black/50 p-3 sm:p-6 overflow-y-auto"
+    ></div>
+    <div id="toasts"></div>
+
+    <script>
+      /* =====================================================================
+   0. PROTEÇÕES BÁSICAS CONTRA INSPEÇÃO
+   (não são invioláveis — servem apenas para afastar curioso)
+   ===================================================================== */
+      (function harden() {
+        // Bloqueia botão direito
+        document.addEventListener("contextmenu", (e) => e.preventDefault());
+        // Bloqueia atalhos de inspeção/visualização de código
+        document.addEventListener("keydown", (e) => {
+          const k = (e.key || "").toUpperCase();
+          if (k === "F12") {
+            e.preventDefault();
+            return false;
+          }
+          if (e.ctrlKey && e.shiftKey && ["I", "J", "C", "K"].includes(k)) {
+            e.preventDefault();
+            return false;
+          }
+          if (e.ctrlKey && k === "U") {
+            e.preventDefault();
+            return false;
+          }
+          if (e.ctrlKey && k === "S") {
+            e.preventDefault();
+            return false;
+          }
+        });
+        // Aviso se DevTools for aberto (deterrente)
+        setInterval(() => {
+          const open =
+            window.outerWidth - window.innerWidth > 250 ||
+            window.outerHeight - window.innerHeight > 250;
+          if (open) {
+            try {
+              console.clear();
+              console.log(
+                "%c⚠️ ACESSO MONITORADO",
+                "color:#ef4444;font-size:26px;font-weight:bold;text-shadow:1px 1px 2px #000",
+              );
+              console.log(
+                "%cEsta ação foi registrada. Feche o inspetor de código.",
+                "color:#f59e0b;font-size:13px",
+              );
+            } catch (_) {}
+          }
+        }, 1500);
+      })();
+
+      /* =====================================================================
+   1. CRIPTOGRAFIA (SHA-256 + salt + iterações)
+   ===================================================================== */
+      function sha256(ascii) {
+        function rr(v, a) {
+          return (v >>> a) | (v << (32 - a));
+        }
+        var mp = Math.pow,
+          mw = mp(2, 32),
+          lp = "length";
+        var i,
+          j,
+          result = "",
+          words = [],
+          bitLen = ascii[lp] * 8;
+        var hash = (sha256.h = sha256.h || []);
+        var k = (sha256.k = sha256.k || []);
+        var pc = k[lp],
+          comp = {};
+        for (var c = 2; pc < 64; c++) {
+          if (!comp[c]) {
+            for (i = 0; i < 313; i += c) comp[i] = c;
+            hash[pc] = (mp(c, 0.5) * mw) | 0;
+            k[pc++] = (mp(c, 1 / 3) * mw) | 0;
+          }
+        }
+        ascii += "\x80";
+        while ((ascii[lp] % 64) - 56) ascii += "\x00";
+        for (i = 0; i < ascii[lp]; i++) {
+          j = ascii.charCodeAt(i);
+          if (j >> 8) return "";
+          words[i >> 2] |= j << (((3 - i) % 4) * 8);
+        }
+        words[words[lp]] = (bitLen / mw) | 0;
+        words[words[lp]] = bitLen;
+        for (j = 0; j < words[lp]; ) {
+          var w = words.slice(j, (j += 16)),
+            old = hash;
+          hash = hash.slice(0, 8);
+          for (i = 0; i < 64; i++) {
+            var w15 = w[i - 15],
+              w2 = w[i - 2],
+              a = hash[0],
+              e = hash[4];
+            var t1 =
+              hash[7] +
+              (rr(e, 6) ^ rr(e, 11) ^ rr(e, 25)) +
+              ((e & hash[5]) ^ (~e & hash[6])) +
+              k[i] +
+              (w[i] =
+                i < 16
+                  ? w[i]
+                  : (w[i - 16] +
+                      (rr(w15, 7) ^ rr(w15, 18) ^ (w15 >>> 3)) +
+                      w[i - 7] +
+                      (rr(w2, 17) ^ rr(w2, 19) ^ (w2 >>> 10))) |
+                    0);
+            var t2 =
+              (rr(a, 2) ^ rr(a, 13) ^ rr(a, 22)) +
+              ((a & hash[1]) ^ (a & hash[2]) ^ (hash[1] & hash[2]));
+            hash = [(t1 + t2) | 0].concat(hash);
+            hash[4] = (hash[4] + t1) | 0;
+          }
+          for (i = 0; i < 8; i++) hash[i] = (hash[i] + old[i]) | 0;
+        }
+        for (i = 0; i < 8; i++)
+          for (j = 3; j + 1; j--) {
+            var b = (hash[i] >> (j * 8)) & 255;
+            result += (b < 16 ? "0" : "") + b.toString(16);
+          }
+        return result;
+      }
+      function generateSalt() {
+        if (window.crypto && window.crypto.getRandomValues) {
+          const a = new Uint8Array(16);
+          window.crypto.getRandomValues(a);
+          return Array.from(a)
+            .map((b) => b.toString(16).padStart(2, "0"))
+            .join("");
+        }
+        return (
+          Math.random().toString(36).slice(2) +
+          Date.now().toString(36) +
+          Math.random().toString(36).slice(2)
+        );
+      }
+      function hashPassword(pw, salt) {
+        const input = encodeURIComponent(salt + "::" + pw + "::" + salt);
+        let h = sha256(input);
+        for (let i = 0; i < 1000; i++) h = sha256(h);
+        return h;
+      }
+      function constantTimeEqual(a, b) {
+        if (
+          typeof a !== "string" ||
+          typeof b !== "string" ||
+          a.length !== b.length
+        )
+          return false;
+        let r = 0;
+        for (let i = 0; i < a.length; i++)
+          r |= a.charCodeAt(i) ^ b.charCodeAt(i);
+        return r === 0;
+      }
+
+      /* =====================================================================
+   2. ESTADO / PERSISTÊNCIA
+   ===================================================================== */
+      const STORAGE_KEY = "palco_escola_v2";
+      const LOCKOUT_KEY = "palco_lockout";
+      const AUTH_KEY = "palco_auth";
+      const AUTH_TIME_KEY = "palco_auth_time";
+      const SCHOOL_NAME = "Start Music";
+      const DEFAULT_PASSWORD = "admin";
+      const SESSION_TIMEOUT_MS = 15 * 60 * 1000; // 15 min de inatividade
+
+      const STATUS = {
+        aguardando: {
+          label: "Aguardando",
+          color: "#94a3b8",
+          bg: "#f1f5f9",
+          text: "#475569",
+        },
+        chegou: {
+          label: "Chegou",
+          color: "#22c55e",
+          bg: "#dcfce7",
+          text: "#15803d",
+        },
+        posicionado: {
+          label: "Posicionado",
+          color: "#8b5cf6",
+          bg: "#ede9fe",
+          text: "#6d28d9",
+        },
+        palco: {
+          label: "No palco",
+          color: "#f97316",
+          bg: "#ffedd5",
+          text: "#c2410c",
+        },
+        concluido: {
+          label: "Concluído",
+          color: "#22c55e",
+          bg: "#dcfce7",
+          text: "#15803d",
+        },
+      };
+      const STATUS_ORDER = [
+        "aguardando",
+        "chegou",
+        "posicionado",
+        "palco",
+        "concluido",
+      ];
+
+      const uid = () => Math.random().toString(36).slice(2, 9);
+      const esc = (s = "") =>
+        String(s).replace(
+          /[&<>"']/g,
+          (c) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#39;",
+            })[c],
+        );
+
+      function seed() {
+        const salt = generateSalt();
+        const TEACHERS = [
+          { id: "t1", title: "Prof.", name: "Marcos" },
+          { id: "t2", title: "Profa.", name: "Juliana" },
+          { id: "t3", title: "Prof.", name: "André" },
+          { id: "t4", title: "Profa.", name: "Beatriz" },
+          { id: "t5", title: "Prof.", name: "Aderson Junior" },
+          { id: "t6", title: "Profa.", name: "Andressa Silva" },
+          { id: "t7", title: "Profa.", name: "Vitória Pinheiro" },
+        ];
+        const NAMES = [
+          "Ana Souza",
+          "Bruno Lima",
+          "Carla Costa",
+          "Diego Santos",
+          "Elisa Pereira",
+          "Felipe Alves",
+          "Gabriela Rocha",
+          "Heitor Martins",
+          "Isabela Ferreira",
+          "João Silva",
+          "Karen Oliveira",
+          "Lucas Almeida",
+        ];
+        const SONGS = [
+          "Clair de Lune",
+          "Aquarela",
+          "Garota de Ipanema",
+          "Canon in D",
+          "Hallelujah",
+          "Asa Branca",
+          "Yesterday",
+          "Perfect",
+          "Für Elise",
+          "Evidências",
+        ];
+        const INSTR = [
+          "Piano",
+          "Violão",
+          "Canto",
+          "Bateria",
+          "Violino",
+          "Flauta",
+          "Guitarra",
+          "Ukulele",
+        ];
+        const TIMES = [
+          ["14:00", "15:00"],
+          ["16:00", "17:00"],
+          ["18:00", "19:00"],
+          ["20:00", "21:00"],
+        ];
+        const iso = (d) => d.toISOString().slice(0, 10);
+        const days = [iso(new Date()), iso(new Date(Date.now() + 864e5))];
+        const sessions = [],
+          students = [];
+        let k = 0;
+        days.forEach((date, di) =>
+          TIMES.forEach(([start, end], ti) => {
+            const ses = {
+              id: "s" + di + ti,
+              date,
+              start,
+              end,
+              title: "Sessão " + (ti + 1),
+              timer: { elapsed: 0, startedAt: null },
+            };
+            sessions.push(ses);
+            for (let i = 0; i < 6; i++) {
+              k++;
+              const t = TEACHERS[k % TEACHERS.length];
+              const ins = INSTR[(k * 3) % INSTR.length];
+              students.push({
+                id: "a" + di + ti + "_" + i,
+                sessionId: ses.id,
+                order: i + 1,
+                name: NAMES[(k * 7) % NAMES.length],
+                teacherTitle: t.title,
+                teacher: t.name,
+                song: SONGS[(k * 5) % SONGS.length],
+                instrument: ins,
+                duration: 2 + (k % 3),
+                status: "aguardando",
+                age: (k % 8) + 4,
+                classGroup: ins + " Turma",
+                playback: k % 3 === 0 ? "Playback" : "",
+                stageStart: null,
+                stageTime: 0,
+              });
+            }
+          }),
+        );
+        const first = students.filter((s) => s.sessionId === sessions[0].id);
+        Object.assign(first[0], {
+          name: "Amanda Teresa Silva Novaes",
+          age: 7,
+          classGroup: "Canto Turma",
+          teacherTitle: "Profa.",
+          teacher: "Vitória Pinheiro",
+          song: "Dias de luta, dias de glória",
+          duration: 2,
+          playback: "Playback",
+          status: "concluido",
+          stageTime: 118000,
+        });
+        Object.assign(first[1], {
+          name: "João Vicente de Oliveira Marin Passos",
+          age: 4,
+          classGroup: "IM 3 - Bateria",
+          teacherTitle: "Prof.",
+          teacher: "Aderson Junior",
+          song: "Meu universo é você",
+          duration: 3,
+          playback: "Bateria pequena",
+          status: "palco",
+          stageStart: Date.now() - 95000,
+        });
+        Object.assign(first[2], {
+          name: "Beatriz Lima Fernandes",
+          age: 10,
+          classGroup: "Canto Turma",
+          teacherTitle: "Profa.",
+          teacher: "Andressa Silva",
+          song: "Naquela mesa",
+          duration: 3,
+          playback: "Violão: Prof. Vandeilson",
+          status: "posicionado",
+        });
+        first[3].status = "chegou";
+        sessions[0].timer = {
+          elapsed: 0,
+          startedAt: Date.now() - 12 * 60 * 1000,
+        };
+        return {
+          version: 3,
+          school: { name: SCHOOL_NAME },
+          settings: {
+            sound: true,
+            vibration: true,
+            salt,
+            passwordHash: hashPassword(DEFAULT_PASSWORD, salt),
+          },
+          teachers: TEACHERS,
+          sessions,
+          students,
+          activeSessionId: sessions[0].id,
+        };
+      }
+
+      function loadState() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (raw) {
+            const p = JSON.parse(raw);
+            if (p && Array.isArray(p.sessions)) {
+              p.school = p.school || {};
+              p.school.name = SCHOOL_NAME;
+              p.settings = p.settings || {};
+              if (typeof p.settings.sound !== "boolean")
+                p.settings.sound = true;
+              if (typeof p.settings.vibration !== "boolean")
+                p.settings.vibration = true;
+              if (!Array.isArray(p.teachers)) p.teachers = [];
+
+              // ---- migração de senha em texto puro → hash ----
+              if (!p.settings.salt) p.settings.salt = generateSalt();
+              if (p.settings.password && !p.settings.passwordHash) {
+                p.settings.passwordHash = hashPassword(
+                  p.settings.password,
+                  p.settings.salt,
+                );
+                delete p.settings.password;
+                try {
+                  localStorage.setItem(STORAGE_KEY, JSON.stringify(p));
+                } catch (_) {}
+              }
+              if (!p.settings.passwordHash) {
+                p.settings.passwordHash = hashPassword(
+                  DEFAULT_PASSWORD,
+                  p.settings.salt,
+                );
+              }
+              return p;
+            }
+          }
+        } catch (e) {}
+        const fresh = seed();
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(fresh));
+        } catch (e) {}
+        return fresh;
+      }
+
+      let state = loadState();
+      const channel =
+        "BroadcastChannel" in window
+          ? new BroadcastChannel("palco_sync")
+          : null;
+
+      function save() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        } catch (e) {}
+        if (channel) channel.postMessage({ type: "update" });
+        render();
+      }
+      if (channel)
+        channel.onmessage = (e) => {
+          if (e.data && e.data.type === "update") {
+            state = loadState();
+            render();
+          }
+        };
+      window.addEventListener("storage", (e) => {
+        if (e.key === STORAGE_KEY) {
+          state = loadState();
+          render();
+        }
+      });
+
+      /* =====================================================================
+   3. HELPERS
+   ===================================================================== */
+      const isAdmin = () => sessionStorage.getItem(AUTH_KEY) === "1";
+
+      const ADMIN_ONLY = new Set([
+        "advance",
+        "call",
+        "timer-start",
+        "timer-pause",
+        "timer-reset",
+        "new-student",
+        "edit-student",
+        "save-student",
+        "del-student",
+        "up",
+        "down",
+        "new-session",
+        "edit-session",
+        "save-session",
+        "del-session",
+        "import-open",
+        "import",
+        "toggle-sound",
+        "logout",
+        "add-teacher",
+        "del-teacher",
+        "change-pass",
+      ]);
+
+      function activeSession() {
+        let s = state.sessions.find((x) => x.id === state.activeSessionId);
+        if (!s) {
+          s = state.sessions
+            .slice()
+            .sort((a, b) =>
+              (a.date + a.start).localeCompare(b.date + b.start),
+            )[0];
+          if (s) state.activeSessionId = s.id;
+        }
+        return s;
+      }
+      const studentsOf = (sid) =>
+        state.students
+          .filter((s) => s.sessionId === sid)
+          .sort((a, b) => a.order - b.order);
+      const renumber = (sid) =>
+        studentsOf(sid).forEach((s, i) => (s.order = i + 1));
+      const teacherLabel = (s) =>
+        s.teacher ? (s.teacherTitle || "Prof.") + " " + s.teacher : "";
+
+      function fmtDate(iso) {
+        const d = new Date(iso + "T12:00:00");
+        const s = d.toLocaleDateString("pt-BR", {
+          weekday: "short",
+          day: "2-digit",
+          month: "2-digit",
+        });
+        return s.charAt(0).toUpperCase() + s.slice(1).replace(".", "");
+      }
+      function fmtDateFull(iso) {
+        const d = new Date(iso + "T12:00:00");
+        const s = d.toLocaleDateString("pt-BR", {
+          weekday: "long",
+          day: "2-digit",
+          month: "long",
+        });
+        return s.charAt(0).toUpperCase() + s.slice(1);
+      }
+      function elapsedMs(ses) {
+        const t = ses.timer || { elapsed: 0, startedAt: null };
+        return (t.elapsed || 0) + (t.startedAt ? Date.now() - t.startedAt : 0);
+      }
+      function fmtDur(ms) {
+        const t = Math.floor(ms / 1000);
+        const h = String(Math.floor(t / 3600)).padStart(2, "0");
+        const m = String(Math.floor((t % 3600) / 60)).padStart(2, "0");
+        return `${h}:${m}:${String(t % 60).padStart(2, "0")}`;
+      }
+      function fmtMS(ms) {
+        const t = Math.max(0, Math.floor(ms / 1000));
+        return (
+          String(Math.floor(t / 60)).padStart(2, "0") +
+          ":" +
+          String(t % 60).padStart(2, "0")
+        );
+      }
+      const stageMs = (s) =>
+        (s.stageTime || 0) + (s.stageStart ? Date.now() - s.stageStart : 0);
+
+      /* =====================================================================
+   4. AÇÕES DE NEGÓCIO
+   ===================================================================== */
+      function applyStatus(st, status) {
+        if (st.status === "palco" && status !== "palco" && st.stageStart) {
+          st.stageTime = (st.stageTime || 0) + (Date.now() - st.stageStart);
+          st.stageStart = null;
+        }
+        if (status === "palco" && st.status !== "palco")
+          st.stageStart = Date.now();
+        st.status = status;
+      }
+
+      function setStatus(id, status) {
+        const st = state.students.find((s) => s.id === id);
+        if (!st) return;
+        if (status === "palco") {
+          state.students.forEach((s) => {
+            if (
+              s.sessionId === st.sessionId &&
+              s.status === "palco" &&
+              s.id !== id
+            )
+              applyStatus(s, "concluido");
+          });
+        }
+        applyStatus(st, status);
+        save();
+      }
+
+      function advance() {
+        const ses = activeSession();
+        if (!ses) return;
+        const onStage = studentsOf(ses.id).find((s) => s.status === "palco");
+        if (onStage) applyStatus(onStage, "concluido");
+        const next = studentsOf(ses.id).filter(
+          (s) => s.status !== "concluido",
+        )[0];
+        if (next) applyStatus(next, "palco");
+        const after = studentsOf(ses.id).filter(
+          (s) => s.status !== "concluido" && s.status !== "palco",
+        )[0];
+        if (after) applyStatus(after, "posicionado");
+        save();
+        if (next)
+          notify("🎤 No palco agora", next.name + " — " + next.song, "stage");
+        else
+          notify(
+            "✅ Sessão encerrada",
+            "Todas as apresentações foram concluídas.",
+            "done",
+          );
+      }
+
+      function callNext() {
+        const ses = activeSession();
+        if (!ses) return;
+        const next = studentsOf(ses.id).find(
+          (s) => s.status !== "concluido" && s.status !== "palco",
+        );
+        if (!next) return;
+        applyStatus(next, "posicionado");
+        save();
+        notify(
+          "📣 Chamando",
+          next.name + " — posicione-se nos bastidores.",
+          "call",
+        );
+      }
+
+      function move(id, dir) {
+        const st = state.students.find((s) => s.id === id);
+        if (!st) return;
+        const list = studentsOf(st.sessionId);
+        const i = list.findIndex((s) => s.id === id),
+          j = i + dir;
+        if (j < 0 || j >= list.length) return;
+        [list[i].order, list[j].order] = [list[j].order, list[i].order];
+        save();
+      }
+
+      /* ---------- Notificações ---------- */
+      let audioCtx = null;
+      function chime() {
+        if (!state.settings.sound) return;
+        try {
+          audioCtx =
+            audioCtx ||
+            new (window.AudioContext || window.webkitAudioContext)();
+          if (audioCtx.state === "suspended") audioCtx.resume();
+          const now = audioCtx.currentTime;
+          [880, 1174.66].forEach((freq, i) => {
+            const osc = audioCtx.createOscillator(),
+              gain = audioCtx.createGain();
+            osc.type = "sine";
+            osc.frequency.value = freq;
+            const t0 = now + i * 0.18;
+            gain.gain.setValueAtTime(0.0001, t0);
+            gain.gain.linearRampToValueAtTime(0.28, t0 + 0.02);
+            gain.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.38);
+            osc.connect(gain).connect(audioCtx.destination);
+            osc.start(t0);
+            osc.stop(t0 + 0.42);
+          });
+        } catch (e) {}
+      }
+      function notify(title, msg, kind) {
+        toast(title, msg, kind);
+        chime();
+        if (state.settings.vibration && navigator.vibrate)
+          navigator.vibrate(kind === "stage" ? [120, 60, 120] : [90]);
+      }
+      function toast(title, msg, kind) {
+        const el = document.createElement("div");
+        el.className = "toast";
+        const colors = {
+          stage: "#f97316",
+          call: "#3b82f6",
+          done: "#22c55e",
+          denied: "#ef4444",
+        };
+        if (colors[kind]) el.style.borderLeftColor = colors[kind];
+        el.innerHTML = `<p class="font-extrabold text-sm">${esc(title)}</p><p class="text-xs text-slate-300 mt-0.5">${esc(msg)}</p>`;
+        document.getElementById("toasts").appendChild(el);
+        setTimeout(() => {
+          el.style.opacity = "0";
+          el.style.transition = "opacity .3s";
+        }, 3600);
+        setTimeout(() => el.remove(), 4000);
+      }
+
+      /* =====================================================================
+   5. AUTENTICAÇÃO SEGURA
+   ===================================================================== */
+      function getLockout() {
+        try {
+          return (
+            JSON.parse(localStorage.getItem(LOCKOUT_KEY)) || {
+              attempts: 0,
+              until: 0,
+            }
+          );
+        } catch (_) {
+          return { attempts: 0, until: 0 };
+        }
+      }
+      function setLockout(v) {
+        try {
+          localStorage.setItem(LOCKOUT_KEY, JSON.stringify(v));
+        } catch (_) {}
+      }
+      function isUsingDefaultPassword() {
+        if (!state.settings.passwordHash || !state.settings.salt) return true;
+        const h = hashPassword(DEFAULT_PASSWORD, state.settings.salt);
+        return constantTimeEqual(h, state.settings.passwordHash);
+      }
+      function handleLoginAttempt() {
+        const lock = getLockout();
+        if (lock.until > Date.now()) {
+          const secs = Math.ceil((lock.until - Date.now()) / 1000);
+          toast(
+            "Bloqueado",
+            `Aguarde ${secs}s para tentar novamente.`,
+            "denied",
+          );
+          return;
+        }
+        const inp = document.getElementById("loginPass");
+        const entered = inp.value;
+        const hash = hashPassword(entered, state.settings.salt);
+        if (constantTimeEqual(hash, state.settings.passwordHash)) {
+          setLockout({ attempts: 0, until: 0 });
+          sessionStorage.setItem(AUTH_KEY, "1");
+          sessionStorage.setItem(AUTH_TIME_KEY, String(Date.now()));
+          inp.value = "";
+          render();
+          toast("Bem-vindo", "Acesso liberado para a equipe.");
+        } else {
+          const attempts = lock.attempts + 1;
+          if (attempts >= 5) {
+            setLockout({ attempts: 0, until: Date.now() + 60000 });
+            toast(
+              "Bloqueado",
+              "Muitas tentativas. Aguarde 60 segundos.",
+              "denied",
+            );
+          } else {
+            setLockout({ attempts, until: 0 });
+            toast(
+              "Senha incorreta",
+              `Tente novamente (${5 - attempts} restantes).`,
+              "denied",
+            );
+          }
+          inp.value = "";
+        }
+      }
+
+      /* =====================================================================
+   6. CABEÇALHO E ABAS
+   ===================================================================== */
+      function renderHeader() {
+        document.getElementById("schoolName").textContent =
+          state.school.name || SCHOOL_NAME;
+        const b = document.getElementById("btnSound");
+        b.textContent = state.settings.sound ? "🔔" : "🔕";
+        b.classList.toggle("hidden", !isAdmin());
+      }
+
+      function renderTabs() {
+        const wrap = document.getElementById("sessionTabs");
+        const groups = {};
+        state.sessions.forEach((s) =>
+          (groups[s.date] = groups[s.date] || []).push(s),
+        );
+        const dates = Object.keys(groups).sort();
+        if (!dates.length) {
+          wrap.innerHTML =
+            '<p class="text-slate-400 text-sm py-2">Nenhuma sessão cadastrada.</p>';
+          return;
+        }
+        wrap.innerHTML = dates
+          .map((date) => {
+            const chips = groups[date]
+              .sort((a, b) => a.start.localeCompare(b.start))
+              .map((s) => {
+                const active = s.id === state.activeSessionId;
+                const count = state.students.filter(
+                  (x) => x.sessionId === s.id,
+                ).length;
+                const done = state.students.filter(
+                  (x) => x.sessionId === s.id && x.status === "concluido",
+                ).length;
+                return `<button data-act="pick-session" data-id="${s.id}" class="chip ${active ? "chip-active" : ""}">
+        <span class="font-bold">${s.start}–${s.end}</span>
+        <span class="text-[10px] opacity-80">${done}/${count} alunos</span></button>`;
+              })
+              .join("");
+            return `<div class="flex items-center gap-2 shrink-0">
+      <span class="text-[10px] uppercase tracking-wider text-slate-400 font-bold whitespace-nowrap">${fmtDate(date)}</span>
+      <div class="flex gap-2">${chips}</div></div>`;
+          })
+          .join("");
+      }
+
+      /* =====================================================================
+   7. PAINEL AO VIVO
+   ===================================================================== */
+      function renderLive() {
+        const root = document.getElementById("liveView");
+        const ses = activeSession();
+        if (!ses) {
+          root.innerHTML = `<div class="bg-white rounded-2xl p-10 text-center text-slate-500 shadow-sm border border-slate-200">Nenhuma sessão cadastrada. A equipe deve acessar <b>Equipe</b> para criar a primeira sessão.</div>`;
+          return;
+        }
+        const list = studentsOf(ses.id);
+        const onStage = list.find((s) => s.status === "palco");
+        const queue = list.filter(
+          (s) => s.status !== "concluido" && s.status !== "palco",
+        );
+        const next = queue[0];
+        const call3 = queue.slice(0, 3);
+        const admin = isAdmin();
+
+        const counts = {
+          total: list.length,
+          presentes: list.filter((s) =>
+            ["chegou", "posicionado", "palco"].includes(s.status),
+          ).length,
+          posicionados: list.filter((s) => s.status === "posicionado").length,
+          concluidos: list.filter((s) => s.status === "concluido").length,
+          aguardando: list.filter((s) => s.status === "aguardando").length,
+        };
+
+        const stageCard = onStage
+          ? `
+    <div id="stageBox">
+      <div class="flex items-start justify-between gap-3">
+        <div class="min-w-0">
+          <p class="text-[11px] uppercase tracking-widest font-extrabold text-orange-100">🎤 No palco agora</p>
+          <h2 class="text-2xl sm:text-3xl font-extrabold leading-tight mt-1 break-words">${esc(onStage.name)}</h2>
+          <p class="mt-1 text-orange-50 font-semibold break-words">${esc(onStage.song)}</p>
+          <p class="text-sm text-orange-100/85 mt-0.5">${esc(onStage.instrument)} · ${esc(teacherLabel(onStage))}</p>
+        </div>
+        <span class="shrink-0 px-2.5 py-1 rounded-full bg-white/25 text-xs font-extrabold">#${onStage.order}</span>
+      </div>
+
+      <div id="stageTimer" data-id="${onStage.id}" class="mt-4 bg-black/15 rounded-2xl p-4">
+        <div class="flex items-end justify-between gap-3">
+          <div>
+            <p class="text-[10px] uppercase tracking-wider font-extrabold text-orange-100">⏱ Tempo do aluno</p>
+            <p id="stageClock" class="stage-clock mono text-5xl sm:text-6xl font-extrabold leading-none mt-1">${fmtMS(stageMs(onStage))}</p>
+          </div>
+          <div class="text-right">
+            <p class="text-[10px] uppercase tracking-wider font-extrabold text-orange-100">Previsto</p>
+            <p class="mono text-xl font-extrabold">${String(onStage.duration).padStart(2, "0")}:00</p>
+            <p id="stageOver" class="stage-over mono text-sm font-extrabold mt-0.5"></p>
+          </div>
+        </div>
+        <div class="stage-bar mt-3"><div id="stageFill" style="width:0%"></div></div>
+      </div>
+
+      ${admin ? `<button data-act="advance" class="mt-4 w-full bg-white text-orange-600 font-extrabold rounded-xl py-3 hover:bg-orange-50 active:scale-[.99] transition">✓ Concluir e chamar próximo</button>` : ""}
+    </div>`
+          : `
+    <p class="text-[11px] uppercase tracking-widest font-extrabold text-orange-100">Palco livre</p>
+    <h2 class="text-xl sm:text-2xl font-extrabold mt-1">Nenhum aluno no palco</h2>
+    <p class="text-sm text-orange-50/90 mt-1">${next ? "Próximo da fila: <b>" + esc(next.name) + "</b>" : "Fila encerrada 🎉"}</p>
+    ${admin ? `<button data-act="advance" class="mt-4 w-full bg-white text-orange-600 font-extrabold rounded-xl py-3 hover:bg-orange-50 active:scale-[.99] transition">▶ Iniciar próxima apresentação</button>` : ""}`;
+
+        const nextCard = next
+          ? `
+    <p class="text-[11px] uppercase tracking-widest font-extrabold text-blue-100">⏭ Próximo a se apresentar</p>
+    <h2 class="text-xl sm:text-2xl font-extrabold leading-tight mt-1 break-words">${esc(next.name)}</h2>
+    <p class="mt-1 text-blue-50 font-semibold break-words">${esc(next.song)}</p>
+    <p class="text-sm text-blue-100/85 mt-0.5">${esc(next.instrument)} · ${esc(teacherLabel(next))} · ${next.duration} min</p>
+    <div class="mt-2"><span class="badge" style="background:rgba(255,255,255,.22);color:#fff">#${next.order} na fila</span></div>
+    ${admin ? `<button data-act="call" class="mt-4 w-full bg-white text-blue-700 font-extrabold rounded-xl py-2.5 hover:bg-blue-50 active:scale-[.99] transition">📣 Chamar para os bastidores</button>` : ""}`
+          : `
+    <p class="text-[11px] uppercase tracking-widest font-extrabold text-blue-100">⏭ Próximo</p>
+    <h2 class="text-xl font-extrabold mt-1">Fila encerrada</h2>
+    <p class="text-sm text-blue-100/85 mt-1">Todas as apresentações desta sessão foram concluídas.</p>`;
+
+        const indicators = [
+          { label: "Total da sessão", value: counts.total, color: "#0f172a" },
+          { label: "Chegou", value: counts.presentes, color: "#2563eb" },
+          {
+            label: "Posicionados",
+            value: counts.posicionados,
+            color: "#7c3aed",
+          },
+          { label: "Concluídos", value: counts.concluidos, color: "#16a34a" },
+          { label: "Aguardando", value: counts.aguardando, color: "#64748b" },
+        ]
+          .map(
+            (i) => `
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm px-4 py-3">
+      <p class="text-[10px] uppercase tracking-wider font-extrabold text-slate-500">${i.label}</p>
+      <p class="mono text-3xl font-extrabold leading-tight" style="color:${i.color}">${i.value}</p>
+    </div>`,
+          )
+          .join("");
+
+        const callList = call3.length
+          ? call3
+              .map((s, i) => {
+                const st = STATUS[s.status];
+                return `<div class="flex items-center gap-3 px-3 py-2.5 rounded-xl border border-slate-200 bg-slate-50">
+      <span class="w-8 h-8 shrink-0 rounded-lg grid place-items-center text-sm font-extrabold" style="background:${st.bg};color:${st.text}">${i + 1}</span>
+      <div class="min-w-0 flex-1">
+        <p class="font-bold text-sm truncate">${esc(s.name)}</p>
+        <p class="text-[11px] text-slate-500 truncate">${esc(s.song)} · ${esc(s.instrument)}</p>
+      </div>
+      <span class="badge" style="background:${st.bg};color:${st.text}">${st.label}</span></div>`;
+              })
+              .join("")
+          : `<p class="text-sm text-slate-500 text-center py-4">Nenhum aluno na fila.</p>`;
+
+        const timerCard = `
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-5">
+      <p class="text-[10px] uppercase tracking-wider font-extrabold text-slate-500">⏱ Tempo decorrido da sessão</p>
+      <p id="timerDisplay" class="mono text-3xl sm:text-4xl font-extrabold text-navy mt-1">${fmtDur(elapsedMs(ses))}</p>
+      ${
+        admin
+          ? `<div class="flex gap-2 mt-3">
+        <button data-act="timer-start" class="btn-primary flex-1">▶ Iniciar</button>
+        <button data-act="timer-pause" class="btn-ghost flex-1">⏸ Pausar</button>
+        <button data-act="timer-reset" class="btn-ghost">⟲</button></div>`
+          : `<p class="text-xs text-slate-400 mt-2">Controle disponível para a equipe.</p>`
+      }
+    </div>`;
+
+        const rows = list.length
+          ? list
+              .map((s) => {
+                const st = STATUS[s.status];
+                const isStage = s.status === "palco";
+                const isNext = next && s.id === next.id;
+                let circle = "bg-slate-200 text-slate-600";
+                if (isStage) circle = "bg-[#1e3a8a] text-white";
+                else if (isNext || s.status === "posicionado")
+                  circle = "bg-[#ede9fe] text-[#5b21b6]";
+                else if (s.status === "chegou")
+                  circle = "bg-green-100 text-green-700";
+                else if (s.status === "concluido")
+                  circle = "bg-green-50 text-green-600";
+
+                const statusControl = admin
+                  ? `<select data-select="status" data-id="${s.id}" class="status-select !rounded-full" style="border-color:${st.color};color:${st.text};background:${st.bg}">
+          ${STATUS_ORDER.map((k) => `<option value="${k}" ${k === s.status ? "selected" : ""}>${STATUS[k].label}</option>`).join("")}</select>`
+                  : `<span class="badge !rounded-full" style="background:${st.bg};color:${st.text}">${st.label}</span>`;
+
+                let timeHtml = `<span>⏱ ${s.duration}:00</span>`;
+                if (isStage)
+                  timeHtml = `<span class="text-orange-600">⏱ <span data-clock="${s.id}" data-plan="${s.duration}" class="mono">${fmtMS(stageMs(s))}</span> / ${s.duration}:00</span>`;
+                else if (s.status === "concluido" && s.stageTime) {
+                  const over = s.stageTime > s.duration * 60000;
+                  timeHtml = `<span class="${over ? "text-red-600" : "text-green-600"}">⏱ <span class="mono">${fmtMS(s.stageTime)}</span> / ${s.duration}:00</span>`;
+                }
+
+                return `<li class="px-4 py-4 flex gap-4 border-b border-slate-100 last:border-0 hover:bg-slate-50 transition-colors">
+      <div class="shrink-0 pt-1"><span class="w-12 h-12 sm:w-14 sm:h-14 rounded-full grid place-items-center text-lg sm:text-xl font-extrabold ${circle}">${s.order}</span></div>
+      <div class="min-w-0 flex-1">
+        <p class="text-lg sm:text-xl font-extrabold text-navy leading-tight">${esc(s.name)} ${s.age ? `<span class="text-sm font-semibold text-slate-500">· ${s.age} anos</span>` : ""}</p>
+        <p class="text-xs sm:text-sm text-slate-500 font-medium mt-0.5">${esc(s.classGroup || s.instrument)} · ${esc(teacherLabel(s))}</p>
+        <p class="text-sm font-bold text-slate-700 mt-1 flex flex-wrap items-center gap-1">
+          <span>🎵 ${esc(s.song)}</span><span class="text-slate-400 mx-1">·</span>${timeHtml}</p>
+        ${s.playback ? `<p class="text-xs sm:text-sm text-orange-600 font-semibold mt-0.5">🚩 ${esc(s.playback)}</p>` : ""}
+        <div class="flex flex-wrap items-center gap-2 mt-2">
+          ${statusControl}
+          ${
+            admin
+              ? `<div class="flex items-center gap-1.5 ml-auto">
+            <button data-act="up" data-id="${s.id}" class="ico !w-8 !h-8 !text-[10px]" title="Subir">▲</button>
+            <button data-act="down" data-id="${s.id}" class="ico !w-8 !h-8 !text-[10px]" title="Descer">▼</button>
+            <button data-act="edit-student" data-id="${s.id}" class="ico !w-8 !h-8 !text-[10px]" title="Editar">✎</button>
+            <button data-act="del-student" data-id="${s.id}" class="ico ico-danger !w-8 !h-8 !text-[10px]" title="Excluir">✕</button></div>`
+              : ""
+          }
+        </div>
+      </div></li>`;
+              })
+              .join("")
+          : `<li class="px-4 py-8 text-center text-sm text-slate-500">Nenhum aluno nesta sessão.</li>`;
+
+        const legend = STATUS_ORDER.map((k) => {
+          const st = STATUS[k];
+          return `<span class="badge" style="background:${st.bg};color:${st.text}"><span style="width:.5rem;height:.5rem;border-radius:999px;background:${st.color};display:inline-block"></span>${st.label}</span>`;
+        }).join("");
+
+        root.innerHTML = `
+    <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+      <div>
+        <h2 class="text-base sm:text-lg font-extrabold text-navy">${fmtDateFull(ses.date)} · ${ses.start} às ${ses.end}</h2>
+        <p class="text-xs sm:text-sm text-slate-500">${list.length} apresentações · ${counts.concluidos} concluídas</p>
+      </div>
+      <span class="flex items-center gap-2 text-[11px] font-extrabold uppercase tracking-wider text-emerald-600"><span class="live-dot"></span> Ao vivo</span>
+    </div>
+    <div class="flex gap-1.5 flex-wrap mb-4">${legend}</div>
+    <div class="grid gap-3 sm:gap-4 lg:grid-cols-3 mb-3 sm:mb-4">
+      <div class="lg:col-span-2 rounded-2xl p-4 sm:p-6 text-white shadow-lg" style="background:linear-gradient(135deg,#f97316,#ea580c)">${stageCard}</div>
+      <div class="rounded-2xl p-4 sm:p-6 text-white shadow-lg" style="background:linear-gradient(135deg,#2563eb,#1d4ed8)">${nextCard}</div>
+    </div>
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3 mb-3 sm:mb-4">${indicators}</div>
+    <div class="grid gap-3 sm:gap-4 lg:grid-cols-3 mb-3 sm:mb-4">
+      <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-5">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="font-extrabold text-navy text-sm sm:text-base">📣 Chamada — próximos 3</h3>
+          ${admin ? `<button data-act="call" class="text-xs font-bold text-blue-600 hover:underline">Chamar próximo</button>` : ""}
+        </div>
+        <div class="space-y-2">${callList}</div>
+      </div>
+      ${timerCard}
+    </div>
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+      <div class="px-4 py-3 border-b border-slate-200 flex items-center justify-between">
+        <h3 class="font-extrabold text-navy text-sm sm:text-base">🎵 Programação da sessão</h3>
+        <span class="text-[11px] font-bold text-slate-500">${counts.concluidos}/${counts.total} concluídas</span>
+      </div>
+      <ul class="divide-y divide-slate-100">${rows}</ul>
+    </div>`;
+        tick();
+      }
+
+      /* =====================================================================
+   8. PAINEL ADMIN
+   ===================================================================== */
+      function renderAdmin() {
+        const ok = isAdmin();
+        document.getElementById("adminGate").classList.toggle("hidden", ok);
+        document.getElementById("adminPanel").classList.toggle("hidden", !ok);
+        if (!ok) {
+          ["adminSessions", "adminStudents", "adminTeachers"].forEach(
+            (i) => (document.getElementById(i).innerHTML = ""),
+          );
+          return;
+        }
+
+        document
+          .getElementById("pwdWarning")
+          .classList.toggle("hidden", !isUsingDefaultPassword());
+
+        const sessions = state.sessions
+          .slice()
+          .sort((a, b) => (a.date + a.start).localeCompare(b.date + b.start));
+        document.getElementById("adminSessions").innerHTML = sessions.length
+          ? sessions
+              .map((s) => {
+                const total = state.students.filter(
+                  (x) => x.sessionId === s.id,
+                ).length;
+                const done = state.students.filter(
+                  (x) => x.sessionId === s.id && x.status === "concluido",
+                ).length;
+                const active = s.id === state.activeSessionId;
+                return `<div class="flex flex-wrap items-center gap-2 px-3 py-2.5 rounded-xl border ${active ? "border-orange-300 bg-orange-50" : "border-slate-200 bg-slate-50"}">
+      <div class="min-w-0 flex-1">
+        <p class="font-bold text-sm">${fmtDate(s.date)} · ${s.start} às ${s.end}</p>
+        <p class="text-[11px] text-slate-500">${esc(s.title || "Sessão")} · ${total} alunos · ${done} concluídos</p>
+      </div>
+      <div class="flex gap-1.5">
+        <button data-act="pick-session" data-id="${s.id}" class="ico" title="Selecionar">👁</button>
+        <button data-act="edit-session" data-id="${s.id}" class="ico" title="Editar">✎</button>
+        <button data-act="del-session" data-id="${s.id}" class="ico ico-danger" title="Excluir">✕</button>
+      </div></div>`;
+              })
+              .join("")
+          : `<p class="text-sm text-slate-500 text-center py-4">Nenhuma sessão cadastrada.</p>`;
+
+        document.getElementById("adminTeachers").innerHTML = state.teachers
+          .length
+          ? state.teachers
+              .map(
+                (t) =>
+                  `<span class="inline-flex items-center gap-2 pl-3 pr-1.5 py-1 rounded-full bg-orange-50 border border-orange-200 text-sm font-bold text-orange-700">
+      ${esc(t.title)} ${esc(t.name)}
+      <button data-act="del-teacher" data-id="${t.id}" class="ico ico-danger !w-6 !h-6 !rounded-full" title="Remover">✕</button></span>`,
+              )
+              .join("")
+          : `<p class="text-sm text-slate-500">Nenhum professor cadastrado ainda.</p>`;
+
+        const ses = activeSession();
+        document.getElementById("adminSessionName").textContent = ses
+          ? `— ${fmtDate(ses.date)} · ${ses.start} às ${ses.end}`
+          : "—";
+        const list = ses ? studentsOf(ses.id) : [];
+        document.getElementById("adminStudents").innerHTML = list.length
+          ? list
+              .map((s) => {
+                const st = STATUS[s.status];
+                return `<div class="flex flex-wrap items-center gap-2 px-3 py-2.5 rounded-xl border border-slate-200 bg-slate-50">
+      <span class="w-7 h-7 shrink-0 rounded-lg grid place-items-center text-xs font-extrabold" style="background:${st.bg};color:${st.text}">${s.order}</span>
+      <div class="min-w-0 flex-1">
+        <p class="font-bold text-sm truncate">${esc(s.name)} ${s.age ? `<span class="text-[10px] text-slate-400 font-normal">(${s.age} anos)</span>` : ""}</p>
+        <p class="text-[11px] text-slate-500 truncate">${esc(s.classGroup || s.instrument)} · ${esc(teacherLabel(s))} · ${s.duration} min</p>
+      </div>
+      <select data-select="status" data-id="${s.id}" class="status-select" style="border-color:${st.color};color:${st.text};background:${st.bg}">
+        ${STATUS_ORDER.map((k) => `<option value="${k}" ${k === s.status ? "selected" : ""}>${STATUS[k].label}</option>`).join("")}</select>
+      <div class="flex gap-1">
+        <button data-act="up" data-id="${s.id}" class="ico">▲</button>
+        <button data-act="down" data-id="${s.id}" class="ico">▼</button>
+        <button data-act="edit-student" data-id="${s.id}" class="ico">✎</button>
+        <button data-act="del-student" data-id="${s.id}" class="ico ico-danger">✕</button>
+      </div></div>`;
+              })
+              .join("")
+          : `<p class="text-sm text-slate-500 text-center py-4">Nenhum aluno nesta sessão.</p>`;
+
+        document
+          .querySelectorAll("[data-toggle]")
+          .forEach((cb) => (cb.checked = !!state.settings[cb.dataset.toggle]));
+      }
+
+      function render() {
+        renderHeader();
+        renderTabs();
+        renderLive();
+        renderAdmin();
+      }
+
+      function switchTab(tab) {
+        document
+          .getElementById("liveView")
+          .classList.toggle("hidden", tab !== "live");
+        document
+          .getElementById("adminView")
+          .classList.toggle("hidden", tab !== "admin");
+        document.querySelectorAll(".tab-btn").forEach((b) => {
+          const on = b.dataset.tab === tab;
+          b.classList.toggle("bg-orange-500", on);
+          b.classList.toggle("bg-white/10", !on);
+        });
+      }
+
+      /* =====================================================================
+   9. MODAIS
+   ===================================================================== */
+      const modalRoot = document.getElementById("modalRoot");
+      const openModal = (html) => {
+        modalRoot.innerHTML = html;
+        modalRoot.classList.remove("hidden");
+      };
+      const closeModal = () => {
+        modalRoot.classList.add("hidden");
+        modalRoot.innerHTML = "";
+      };
+
+      function openStudentModal(id) {
+        if (!isAdmin()) return;
+        const ses = activeSession();
+        if (!ses) {
+          toast("Atenção", "Crie uma sessão antes de cadastrar alunos.");
+          return;
+        }
+        const st = id ? state.students.find((s) => s.id === id) : null;
+        const title = st ? st.teacherTitle || "Prof." : "Prof.";
+
+        openModal(`
+    <div class="max-w-lg mx-auto bg-white rounded-2xl shadow-2xl p-5 sm:p-6 my-4">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="font-extrabold text-navy text-lg">${st ? "Editar aluno" : "Novo aluno"}</h3>
+        <button data-act="close-modal" class="ico">✕</button>
+      </div>
+      <div class="space-y-3">
+        <label class="fld">Nome completo
+          <input id="f_name" class="inp" value="${st ? esc(st.name) : ""}" placeholder="Ex.: Ana Beatriz Souza"></label>
+        <div class="grid sm:grid-cols-3 gap-3">
+          <label class="fld">Idade<input id="f_age" type="number" min="0" class="inp" value="${st ? st.age || "" : ""}" placeholder="Ex.: 7"></label>
+          <label class="fld">Turma / Grupo<input id="f_class" class="inp" value="${st ? esc(st.classGroup || "") : ""}" placeholder="Ex.: Canto Turma"></label>
+          <label class="fld">Duração (min)<input id="f_duration" type="number" min="1" max="60" class="inp" value="${st ? st.duration : 4}"></label>
+        </div>
+        <div class="grid sm:grid-cols-2 gap-3">
+          <div class="fld">Professor responsável
+            <div class="prof-wrap">
+              <select id="f_title" class="prof-fixed">
+                <option ${title === "Prof." ? "selected" : ""}>Prof.</option>
+                <option ${title === "Profa." ? "selected" : ""}>Profa.</option>
+              </select>
+              <input id="f_teacher" list="teacherList" class="inp" value="${st ? esc(st.teacher) : ""}" placeholder="Escolha ou digite o nome">
+            </div>
+            <datalist id="teacherList">${state.teachers.map((t) => `<option value="${esc(t.name)}">${esc(t.title)} ${esc(t.name)}</option>`).join("")}</datalist>
+          </div>
+          <label class="fld">Instrumento / modalidade<input id="f_instrument" class="inp" value="${st ? esc(st.instrument) : ""}" placeholder="Piano"></label>
+        </div>
+        <label class="fld">Música<input id="f_song" class="inp" value="${st ? esc(st.song) : ""}" placeholder="Clair de Lune"></label>
+        <label class="fld">Playback / Acompanhamento<input id="f_playback" class="inp" value="${st ? esc(st.playback || "") : ""}" placeholder="Ex.: Playback, Bateria pequena, Violão"></label>
+        <label class="fld">Status
+          <select id="f_status" class="inp">${STATUS_ORDER.map((k) => `<option value="${k}" ${st && st.status === k ? "selected" : ""}>${STATUS[k].label}</option>`).join("")}</select></label>
+      </div>
+      <div class="flex gap-2 mt-5">
+        <button data-act="close-modal" class="btn-ghost flex-1">Cancelar</button>
+        <button data-act="save-student" data-id="${st ? st.id : ""}" class="btn-primary flex-1">Salvar</button>
+      </div>
+    </div>`);
+      }
+
+      function saveStudent(id) {
+        if (!isAdmin()) return;
+        const g = (i) => document.getElementById(i).value.trim();
+        const name = g("f_name");
+        if (!name) {
+          toast("Atenção", "Informe o nome do aluno.");
+          return;
+        }
+
+        const teacher = g("f_teacher"),
+          teacherTitle = document.getElementById("f_title").value;
+        if (
+          teacher &&
+          !state.teachers.some(
+            (t) => t.name.toLowerCase() === teacher.toLowerCase(),
+          )
+        )
+          state.teachers.push({
+            id: uid(),
+            title: teacherTitle,
+            name: teacher,
+          });
+
+        const data = {
+          name,
+          age: Number(g("f_age")) || "",
+          classGroup: g("f_class"),
+          teacher,
+          teacherTitle,
+          instrument: g("f_instrument"),
+          song: g("f_song"),
+          playback: g("f_playback"),
+          duration: Number(g("f_duration")) || 4,
+        };
+        const status = g("f_status");
+
+        if (id) {
+          const st = state.students.find((s) => s.id === id);
+          Object.assign(st, data);
+          if (status !== st.status) applyStatus(st, status);
+        } else {
+          const ses = activeSession();
+          const ns = {
+            id: uid(),
+            sessionId: ses.id,
+            order: studentsOf(ses.id).length + 1,
+            ...data,
+            status: "aguardando",
+            stageStart: null,
+            stageTime: 0,
+          };
+          state.students.push(ns);
+          if (status !== "aguardando") applyStatus(ns, status);
+        }
+        closeModal();
+        save();
+        toast("Salvo", "Cadastro atualizado com sucesso.");
+      }
+
+      function openSessionModal(id) {
+        if (!isAdmin()) return;
+        const s = id ? state.sessions.find((x) => x.id === id) : null;
+        const today = new Date().toISOString().slice(0, 10);
+        openModal(`
+    <div class="max-w-md mx-auto bg-white rounded-2xl shadow-2xl p-5 sm:p-6 my-4">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="font-extrabold text-navy text-lg">${s ? "Editar sessão" : "Nova sessão"}</h3>
+        <button data-act="close-modal" class="ico">✕</button>
+      </div>
+      <div class="space-y-3">
+        <label class="fld">Data<input id="s_date" type="date" class="inp" value="${s ? s.date : today}"></label>
+        <div class="grid grid-cols-2 gap-3">
+          <label class="fld">Início<input id="s_start" type="time" class="inp" value="${s ? s.start : "14:00"}"></label>
+          <label class="fld">Término<input id="s_end" type="time" class="inp" value="${s ? s.end : "15:00"}"></label>
+        </div>
+        <label class="fld">Identificação<input id="s_title" class="inp" value="${s ? esc(s.title || "") : "Sessão"}" placeholder="Ex.: Sessão 1"></label>
+      </div>
+      <div class="flex gap-2 mt-5">
+        <button data-act="close-modal" class="btn-ghost flex-1">Cancelar</button>
+        <button data-act="save-session" data-id="${s ? s.id : ""}" class="btn-primary flex-1">Salvar</button>
+      </div>
+    </div>`);
+      }
+
+      function saveSession(id) {
+        if (!isAdmin()) return;
+        const date = document.getElementById("s_date").value;
+        const start = document.getElementById("s_start").value;
+        const end = document.getElementById("s_end").value;
+        const title =
+          document.getElementById("s_title").value.trim() || "Sessão";
+        if (!date || !start || !end) {
+          toast("Atenção", "Preencha data, início e término.");
+          return;
+        }
+        if (id)
+          Object.assign(
+            state.sessions.find((s) => s.id === id),
+            { date, start, end, title },
+          );
+        else {
+          const ns = {
+            id: uid(),
+            date,
+            start,
+            end,
+            title,
+            timer: { elapsed: 0, startedAt: null },
+          };
+          state.sessions.push(ns);
+          state.activeSessionId = ns.id;
+        }
+        closeModal();
+        save();
+        toast("Salvo", "Sessão atualizada com sucesso.");
+      }
+
+      function openImportModal() {
+        if (!isAdmin()) return;
+        if (!activeSession()) {
+          toast("Atenção", "Selecione uma sessão primeiro.");
+          return;
+        }
+        openModal(`
+    <div class="max-w-lg mx-auto bg-white rounded-2xl shadow-2xl p-5 sm:p-6 my-4">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="font-extrabold text-navy text-lg">Importar programação</h3>
+        <button data-act="close-modal" class="ico">✕</button>
+      </div>
+      <p class="text-xs text-slate-500 mb-2">Uma linha por aluno, campos separados por <b>|</b>. No professor, escreva só o nome (o "Prof." é acrescentado automaticamente):<br>
+        <code class="text-[11px] bg-slate-100 px-1 rounded">Nome | Professor | Música | Instrumento | Duração | Idade | Turma | Playback</code></p>
+      <textarea id="imp_text" rows="8" class="inp font-mono text-xs" placeholder="Ana Souza | Marcos | Clair de Lune | Piano | 4 | 7 | Canto Turma | Playback"></textarea>
+      <div class="flex gap-2 mt-4">
+        <button data-act="close-modal" class="btn-ghost flex-1">Cancelar</button>
+        <button data-act="import" class="btn-primary flex-1">Importar</button>
+      </div>
+    </div>`);
+      }
+
+      function doImport() {
+        if (!isAdmin()) return;
+        const ses = activeSession();
+        const lines = document
+          .getElementById("imp_text")
+          .value.split("\n")
+          .map((l) => l.trim())
+          .filter(Boolean);
+        if (!lines.length) {
+          toast("Atenção", "Nada para importar.");
+          return;
+        }
+        let order = studentsOf(ses.id).length,
+          n = 0;
+        lines.forEach((line) => {
+          const p = line.split("|").map((x) => x.trim());
+          if (!p[0]) return;
+          order++;
+          n++;
+          let title = "Prof.",
+            teacher = p[1] || "";
+          const m = teacher.match(/^(Profa?\.?)\s+(.*)$/i);
+          if (m) {
+            title = /a/i.test(m[1].replace(/\./g, "").slice(4))
+              ? "Profa."
+              : "Prof.";
+            teacher = m[2];
+          }
+          if (
+            teacher &&
+            !state.teachers.some(
+              (t) => t.name.toLowerCase() === teacher.toLowerCase(),
+            )
+          )
+            state.teachers.push({ id: uid(), title, name: teacher });
+          state.students.push({
+            id: uid(),
+            sessionId: ses.id,
+            order,
+            name: p[0],
+            teacherTitle: title,
+            teacher,
+            song: p[2] || "",
+            instrument: p[3] || "",
+            duration: Number(p[4]) || 4,
+            age: Number(p[5]) || "",
+            classGroup: p[6] || "",
+            playback: p[7] || "",
+            status: "aguardando",
+            stageStart: null,
+            stageTime: 0,
+          });
+        });
+        closeModal();
+        save();
+        toast("Importado", n + " aluno(s) adicionado(s) à sessão.");
+      }
+
+      /* =====================================================================
+   10. EVENTOS
+   ===================================================================== */
+      document.addEventListener("click", (e) => {
+        const btn = e.target.closest("[data-act]");
+        if (!btn) return;
+        const act = btn.dataset.act,
+          id = btn.dataset.id;
+
+        if (ADMIN_ONLY.has(act) && !isAdmin()) {
+          toast(
+            "Acesso restrito",
+            "Somente a equipe pode alterar a programação.",
+            "denied",
+          );
+          return;
+        }
+
+        switch (act) {
+          case "tab":
+            switchTab(btn.dataset.tab);
+            break;
+          case "pick-session":
+            state.activeSessionId = id;
+            save();
+            break;
+          case "login":
+            handleLoginAttempt();
+            break;
+          case "reset-pass": {
+            if (
+              confirm(
+                "Isso apagará TODOS os dados (sessões, alunos, professores) e voltará à senha padrão.\n\nContinuar?",
+              )
+            ) {
+              localStorage.removeItem(STORAGE_KEY);
+              localStorage.removeItem(LOCKOUT_KEY);
+              sessionStorage.removeItem(AUTH_KEY);
+              sessionStorage.removeItem(AUTH_TIME_KEY);
+              location.reload();
+            }
+            break;
+          }
+          case "logout":
+            sessionStorage.removeItem(AUTH_KEY);
+            sessionStorage.removeItem(AUTH_TIME_KEY);
+            switchTab("live");
+            render();
+            toast("Sessão encerrada", "Modo somente leitura ativado.");
+            break;
+          case "advance":
+            advance();
+            break;
+          case "call":
+            callNext();
+            break;
+          case "timer-start": {
+            const s = activeSession();
+            if (s && !s.timer.startedAt) {
+              s.timer.startedAt = Date.now();
+              save();
+            }
+            break;
+          }
+          case "timer-pause": {
+            const s = activeSession();
+            if (s && s.timer.startedAt) {
+              s.timer.elapsed += Date.now() - s.timer.startedAt;
+              s.timer.startedAt = null;
+              save();
+            }
+            break;
+          }
+          case "timer-reset": {
+            const s = activeSession();
+            if (s) {
+              s.timer = { elapsed: 0, startedAt: null };
+              save();
+            }
+            break;
+          }
+          case "new-student":
+            openStudentModal(null);
+            break;
+          case "edit-student":
+            openStudentModal(id);
+            break;
+          case "save-student":
+            saveStudent(id || null);
+            break;
+          case "del-student": {
+            const st = state.students.find((s) => s.id === id);
+            if (st && confirm('Remover o aluno "' + st.name + '"?')) {
+              state.students = state.students.filter((s) => s.id !== id);
+              renumber(st.sessionId);
+              save();
+              toast("Removido", "Aluno excluído da programação.");
+            }
+            break;
+          }
+          case "up":
+            move(id, -1);
+            break;
+          case "down":
+            move(id, 1);
+            break;
+          case "new-session":
+            openSessionModal(null);
+            break;
+          case "edit-session":
+            openSessionModal(id);
+            break;
+          case "save-session":
+            saveSession(id || null);
+            break;
+          case "del-session": {
+            const ses = state.sessions.find((s) => s.id === id);
+            if (
+              ses &&
+              confirm(
+                "Excluir a sessão " +
+                  ses.start +
+                  "–" +
+                  ses.end +
+                  " e todos os seus alunos?",
+              )
+            ) {
+              state.sessions = state.sessions.filter((s) => s.id !== id);
+              state.students = state.students.filter((s) => s.sessionId !== id);
+              if (state.activeSessionId === id)
+                state.activeSessionId = state.sessions[0]
+                  ? state.sessions[0].id
+                  : null;
+              save();
+              toast("Removido", "Sessão excluída.");
+            }
+            break;
+          }
+          case "add-teacher": {
+            const name = document.getElementById("t_name").value.trim();
+            const title = document.getElementById("t_title").value;
+            if (!name) {
+              toast("Atenção", "Digite o nome do professor.");
+              break;
+            }
+            if (
+              state.teachers.some(
+                (t) => t.name.toLowerCase() === name.toLowerCase(),
+              )
+            ) {
+              toast("Atenção", "Esse professor já está na lista.");
+              break;
+            }
+            state.teachers.push({ id: uid(), title, name });
+            save();
+            document.getElementById("t_name").value = "";
+            toast("Adicionado", title + " " + name + " cadastrado.");
+            break;
+          }
+          case "del-teacher":
+            state.teachers = state.teachers.filter((t) => t.id !== id);
+            save();
+            toast("Removido", "Professor retirado da lista.");
+            break;
+          case "import-open":
+            openImportModal();
+            break;
+          case "import":
+            doImport();
+            break;
+          case "close-modal":
+            closeModal();
+            break;
+          case "toggle-sound":
+            state.settings.sound = !state.settings.sound;
+            save();
+            if (state.settings.sound) chime();
+            break;
+          case "change-pass": {
+            const p1 = document.getElementById("newPass").value;
+            const p2 = document.getElementById("newPass2").value;
+            if (p1.length < 6) {
+              toast("Atenção", "A senha deve ter pelo menos 6 caracteres.");
+              break;
+            }
+            if (p1 !== p2) {
+              toast("Atenção", "As senhas não coincidem.");
+              break;
+            }
+            if (
+              constantTimeEqual(
+                hashPassword(p1, state.settings.salt),
+                state.settings.passwordHash,
+              )
+            ) {
+              toast("Atenção", "A nova senha precisa ser diferente da atual.");
+              break;
+            }
+            state.settings.salt = generateSalt();
+            state.settings.passwordHash = hashPassword(p1, state.settings.salt);
+            save();
+            document.getElementById("newPass").value = "";
+            document.getElementById("newPass2").value = "";
+            toast("Salvo", "Senha alterada com sucesso.");
+            break;
+          }
+        }
+      });
+
+      document.addEventListener("change", (e) => {
+        const sel = e.target.closest('[data-select="status"]');
+        if (sel) {
+          if (!isAdmin()) {
+            render();
+            toast(
+              "Acesso restrito",
+              "Somente a equipe pode alterar o status.",
+              "denied",
+            );
+            return;
+          }
+          setStatus(sel.dataset.id, sel.value);
+          return;
+        }
+        const tg = e.target.closest("[data-toggle]");
+        if (tg) {
+          if (!isAdmin()) {
+            render();
+            return;
+          }
+          state.settings[tg.dataset.toggle] = tg.checked;
+          save();
+        }
+      });
+
+      document.addEventListener("keydown", (e) => {
+        if (e.key !== "Enter") return;
+        if (e.target.id === "loginPass")
+          document.querySelector('[data-act="login"]').click();
+        if (e.target.id === "t_name")
+          document.querySelector('[data-act="add-teacher"]').click();
+      });
+
+      /* =====================================================================
+   11. CRONÔMETROS
+   ===================================================================== */
+      let lastBeep = null;
+      function tick() {
+        const ses = activeSession();
+        const td = document.getElementById("timerDisplay");
+        if (td && ses) td.textContent = fmtDur(elapsedMs(ses));
+
+        const box = document.getElementById("stageTimer");
+        if (box) {
+          const st = state.students.find((s) => s.id === box.dataset.id);
+          if (st) {
+            const ms = stageMs(st),
+              plan = st.duration * 60000;
+            document.getElementById("stageClock").textContent = fmtMS(ms);
+            document.getElementById("stageFill").style.width =
+              Math.min(100, (ms / plan) * 100) + "%";
+            const over = ms > plan;
+            document.getElementById("stageBox").classList.toggle("over", over);
+            document.getElementById("stageOver").textContent = over
+              ? "+" + fmtMS(ms - plan) + " acima"
+              : "restam " + fmtMS(plan - ms);
+            if (over && lastBeep !== st.id + st.stageStart && isAdmin()) {
+              lastBeep = st.id + st.stageStart;
+              chime();
+            }
+          }
+        }
+        document.querySelectorAll("[data-clock]").forEach((el) => {
+          const st = state.students.find((s) => s.id === el.dataset.clock);
+          if (st) el.textContent = fmtMS(stageMs(st));
+        });
+      }
+      setInterval(tick, 500);
+
+      /* =====================================================================
+   12. AUTO-LOGOUT POR INATIVIDADE
+   ===================================================================== */
+      let lastActivity = Date.now();
+      ["click", "keydown", "mousemove", "touchstart", "scroll"].forEach((ev) =>
+        document.addEventListener(
+          ev,
+          () => {
+            lastActivity = Date.now();
+          },
+          { passive: true },
+        ),
+      );
+      setInterval(() => {
+        if (!isAdmin()) return;
+        if (Date.now() - lastActivity > SESSION_TIMEOUT_MS) {
+          sessionStorage.removeItem(AUTH_KEY);
+          sessionStorage.removeItem(AUTH_TIME_KEY);
+          if (
+            !document.getElementById("adminView").classList.contains("hidden")
+          )
+            switchTab("live");
+          render();
+          toast(
+            "Sessão expirada",
+            "Faça login novamente para continuar.",
+            "denied",
+          );
+        }
+      }, 30000);
+
+      /* =====================================================================
+   13. INICIALIZAÇÃO
+   ===================================================================== */
+      switchTab("live");
+      render();
+    </script>
+  </body>
+</html>
